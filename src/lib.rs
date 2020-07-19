@@ -1,0 +1,17 @@
+mod advent20191208;
+mod advent20191209;
+mod day01;
+mod day02;
+mod day03;
+mod day04;
+mod day05;
+mod day06;
+mod day07;
+mod intcode;
+mod year19day10;
+mod year19day11;
+mod year19day12;
+mod year19day13;
+mod year19day14;
+mod year19day15;
+mod year19day16;
