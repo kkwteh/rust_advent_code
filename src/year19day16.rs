@@ -40,6 +40,20 @@ mod year19day16 {
         }
     }
 
+    fn phase(row: usize, col: usize) -> i64 {
+        BASE_PATTERN[(col + 1) / (row + 1) % 4]
+    }
+
+    #[test]
+    fn test_phase_function() {
+        for i in 0..8 {
+            for j in 0..8 {
+                print!("{}", phase(i, j));
+            }
+            println!("");
+        }
+    }
+
     #[test]
     fn test_phase_pattern_no_repeat() {
         let mut phase_pattern = init_phase_pattern(0);
@@ -80,6 +94,21 @@ mod year19day16 {
         input_phase
     }
 
+    fn compute_output_tail(mut input_phase_tail: Vec<i64>, num_phases: i64) -> Vec<i64> {
+        input_phase_tail.reverse();
+        let mut output_phase_tail: Vec<i64> = vec![0; input_phase_tail.len()];
+        for _n in 0..num_phases {
+            let mut sum = 0;
+            for (i, value) in input_phase_tail.iter().enumerate() {
+                sum += value;
+                output_phase_tail[i] = sum.abs() % 10;
+            }
+            swap(&mut input_phase_tail, &mut output_phase_tail);
+        }
+        input_phase_tail.reverse();
+        input_phase_tail
+    }
+
     #[test]
     fn day_sixteen_part_one_short_example() {
         let mut input_phase: [i64; 650] = [0; 650];
@@ -116,21 +145,63 @@ mod year19day16 {
         }
     }
 
-    // #[test]
+    #[test]
+    fn test_tail() {
+        let readresult = fs::read_to_string("adventinputs/year19day16.txt");
+        let mut input_phase: [i64; 650] = [0; 650];
+        if let Ok(input) = readresult {
+            for (i, c) in input.chars().enumerate() {
+                input_phase[i] = c.to_string().parse::<i64>().unwrap();
+            }
+            let output_phase = compute_output_phase(input_phase, 100);
+            let result = &output_phase[0..8];
+            let input_phase_tail: Vec<i64> = input_phase.to_vec().drain(325..).collect();
+            let output_phase_tail = compute_output_tail(input_phase_tail, 100);
+            let conventional_tail = output_phase[325..335].to_vec();
+            println!("conventional calculation tail {:?}", conventional_tail);
+            println!(
+                "shortcut calculation tail {:?}",
+                output_phase_tail[0..10].to_vec()
+            );
+            assert_eq!(conventional_tail, output_phase_tail[0..10].to_vec());
+        }
+    }
+
+    #[test]
+    fn test_part_two_exmaple() {
+        let inputsegment: Vec<i64> = vec![
+            0, 3, 0, 3, 6, 7, 3, 2, 5, 7, 7, 2, 1, 2, 9, 4, 4, 0, 6, 3, 4, 9, 1, 5, 6, 5, 4, 7, 4,
+            6, 6, 4,
+        ];
+        let output_index = 303673;
+        let mut input_phase = Vec::<i64>::new();
+        for _ in 0..10000 {
+            input_phase.append(&mut inputsegment.clone());
+        }
+        let input_phase_tail: Vec<i64> = input_phase.to_vec().drain(output_index..).collect();
+        let output_phase_tail = compute_output_tail(input_phase_tail, 100);
+        let result = &output_phase_tail[0..8];
+        assert_eq!(result.to_vec(), vec![8, 4, 4, 6, 2, 0, 2, 6]);
+    }
+
+    #[test]
     fn day_sixteen_part_two_challenge() {
-        // let readresult = fs::read_to_string("adventinputs/year19day16.txt");
-        // let mut input_phase: [i64; 650_0000] = [0; 650_0000];
-        // let mut output_phase: [i64; 650_0000] = [0; 650_0000];
-        // if let Ok(input) = readresult {
-        //     // populate input_phase
-        //     for j in 0..10000 {
-        //         for (i, c) in input.chars().enumerate() {
-        //             input_phase[i + 10000 * j] = c.to_string().parse::<i64>().unwrap();
-        //         }
-        //     }
-        //     let output_phase = compute_output_phase_for_real(input_phase, 1);
-        //     let result = &output_phase[0..8];
-        //     println!("INTERMEDIATE VALUE IS {:?}", result);
-        // }
+        //first 7 characters of input
+        let output_index = 5974901;
+        let readresult = fs::read_to_string("adventinputs/year19day16.txt")
+            .expect("expected this to yield a string");
+        let inputsegment: Vec<i64> = readresult
+            .chars()
+            .map(|c| c.to_string().parse::<i64>().unwrap())
+            .collect();
+        let mut input_phase = Vec::<i64>::new();
+        for _ in 0..10000 {
+            input_phase.append(&mut inputsegment.clone());
+        }
+        let input_phase_tail: Vec<i64> = input_phase.to_vec().drain(output_index..).collect();
+        let output_phase_tail = compute_output_tail(input_phase_tail, 100);
+        let result = &output_phase_tail[0..8];
+        println!("THE ANSWER TO DAY SIXTEEN PART TWO IS {:?}", result);
+        // 13270205
     }
 }
