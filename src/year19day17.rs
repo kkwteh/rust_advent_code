@@ -1,5 +1,7 @@
 mod year19day17 {
     use crate::intcode::intcode;
+    use std::fs::OpenOptions;
+    use std::io::prelude::*;
 
     #[derive(Debug)]
     enum Tile {
@@ -91,7 +93,9 @@ mod year19day17 {
         }
         field.pop(); // pop last empty line
         let line_length = field[0].len();
+        println!("Line length {}", line_length);
         let num_lines = field.len();
+        println!("Num lines {}", num_lines);
         let mut alignment_sum = 0;
         for (y, line) in field.iter().enumerate() {
             for (x, tile) in line.iter().enumerate() {
@@ -124,6 +128,39 @@ mod year19day17 {
         println!("Ship location {:?}", ship);
     }
 
+    // A,B,A,B,C,C,B,A,B,C
+    // A 76,44,49,50,44,76,44,49,48,44,82,44,56,44,76,44,49,50,44,10
+    // B 82,44,56,44,82,44,49,48,44,82,44,49,50,44,10
+    // C 76,44,49,48,44,82,44,49,50,44,82,44,56,44,10
+    fn navigate_scaffold(mut ctx: intcode::ProgramContext) {
+        // let input_tokens = "65,44,66,44,65,44,66,44,67,44,67,44,66,44,65,44,66,44,67,10,\
+        // 76,44,49,50,44,76,44,49,48,44,82,44,56,44,76,44,49,50,44,10,\
+        // 82,44,56,44,82,44,49,48,44,82,44,49,50,44,10,\
+        // 76,44,49,48,44,82,44,49,50,44,82,44,56,44,10,\
+        // 121,10"
+        let input_tokens = "65,44,66,44,65,44,66,44,67,44,67,44,66,44,65,44,66,44,67,10,\
+        76,44,49,50,44,76,44,49,48,44,82,44,56,44,76,44,49,50,10,\
+        82,44,56,44,82,44,49,48,44,82,44,49,50,10,\
+        76,44,49,48,44,82,44,49,50,44,82,44,56,10,\
+        121,10"
+            .to_owned();
+        println!("Input {}", input_tokens);
+        ctx.inputs = intcode::read_tokens(&input_tokens);
+        ctx.run_to_next_input_or_done();
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open("adventoutputs/year19day17parttwo.txt")
+            .unwrap();
+        for output in ctx.outputs.iter() {
+            match output.parse::<u8>() {
+                Ok(c) => write!(file, "{}", c as char),
+                Err(e) => write!(file, "{}", output),
+            };
+        }
+        println!("Output length: {}", ctx.outputs.len());
+    }
+
     #[cfg(test)]
     mod test {
         use super::*;
@@ -136,6 +173,32 @@ mod year19day17 {
                 let ctx = intcode::build_program_context(program, vec![]);
                 load_scaffold(ctx);
             }
+        }
+
+        #[test]
+        fn day_seventeen_challenge_part_two() {
+            let mut readresult = fs::read_to_string("adventinputs/year19day17.txt");
+            if let Ok(input) = readresult.as_mut() {
+                input.replace_range(..1, "2");
+                let program = intcode::read_tokens(&input);
+                let ctx = intcode::build_program_context(program, vec![]);
+                navigate_scaffold(ctx);
+            }
+        }
+
+        #[test]
+        fn replace_range() {
+            let mut s = String::from("123456");
+            s.replace_range(..1, "X");
+            assert_eq!(&s[..], "X23456");
+        }
+
+        #[test]
+        fn string_across_multiple_lines() {
+            let string = "one line \
+                          written over \
+                          several";
+            assert_eq!(string, "one line written over several");
         }
     }
 }
