@@ -1,4 +1,3 @@
-#[cfg(test)]
 pub mod intcode {
     enum OpType {
         Add,
@@ -56,30 +55,6 @@ pub mod intcode {
             parameter_modes: Vec::<ParameterMode>::new(),
             relative_base: 0,
         }
-    }
-
-    #[test]
-    fn test_run_to_next_input_or_done() {
-        let tokens = "3,9,8,9,10,9,4,9,99,-1,8";
-        let program = read_tokens(tokens);
-        let input = vec!["8".to_string()];
-        let mut ctx = build_program_context(program, input);
-        ctx.run_to_next_input_or_done();
-        assert_eq!(ctx.outputs[0], "1".to_string());
-        assert_eq!(ctx.done, true);
-    }
-
-    #[test]
-    fn test_run_to_next_input_or_done_need_input() {
-        let tokens = "3,9,8,9,10,9,4,9,99,-1,8";
-        let program = read_tokens(tokens);
-        let mut ctx = build_program_context(program, Vec::<String>::new());
-        ctx.run_to_next_input_or_done();
-        assert_eq!(ctx.done, false);
-        ctx.inputs.push("8".to_string());
-        ctx.run_to_next_input_or_done();
-        assert_eq!(ctx.done, true);
-        assert_eq!(ctx.outputs[0], "1".to_string());
     }
 
     struct OpCode {
@@ -393,37 +368,62 @@ pub mod intcode {
             _ => panic!("Unexpected opcode input {}", opcode_string),
         }
     }
+
     #[cfg(test)]
-    mod tests {
+    mod test {
+        use super::*;
+        #[test]
+        fn test_run_to_next_input_or_done() {
+            let tokens = "3,9,8,9,10,9,4,9,99,-1,8";
+            let program = read_tokens(tokens);
+            let input = vec!["8".to_string()];
+            let mut ctx = build_program_context(program, input);
+            ctx.run_to_next_input_or_done();
+            assert_eq!(ctx.outputs[0], "1".to_string());
+            assert_eq!(ctx.done, true);
+        }
+        #[test]
+        fn test_run_to_next_input_or_done_need_input() {
+            let tokens = "3,9,8,9,10,9,4,9,99,-1,8";
+            let program = read_tokens(tokens);
+            let mut ctx = build_program_context(program, Vec::<String>::new());
+            ctx.run_to_next_input_or_done();
+            assert_eq!(ctx.done, false);
+            ctx.inputs.push("8".to_string());
+            ctx.run_to_next_input_or_done();
+            assert_eq!(ctx.done, true);
+            assert_eq!(ctx.outputs[0], "1".to_string());
+        }
+
         #[test]
         fn module_path() {
             println!(module_path!())
         }
-    }
 
-    #[test]
-    fn test_unpack_opcode() {
-        let result = unpack_opcode(&"1102".to_string());
-        assert_eq!(
-            result.parameter_modes,
-            vec![
-                ParameterMode::Immediate,
-                ParameterMode::Immediate,
-                ParameterMode::Position,
-            ]
-        );
-    }
+        #[test]
+        fn test_unpack_opcode() {
+            let result = unpack_opcode(&"1102".to_string());
+            assert_eq!(
+                result.parameter_modes,
+                vec![
+                    ParameterMode::Immediate,
+                    ParameterMode::Immediate,
+                    ParameterMode::Position,
+                ]
+            );
+        }
 
-    #[test]
-    fn test_unpack_opcode_weird_case() {
-        let result = unpack_opcode(&"104".to_string());
-        assert_eq!(
-            result.parameter_modes,
-            vec![
-                ParameterMode::Immediate,
-                ParameterMode::Position,
-                ParameterMode::Position,
-            ]
-        );
+        #[test]
+        fn test_unpack_opcode_weird_case() {
+            let result = unpack_opcode(&"104".to_string());
+            assert_eq!(
+                result.parameter_modes,
+                vec![
+                    ParameterMode::Immediate,
+                    ParameterMode::Position,
+                    ParameterMode::Position,
+                ]
+            );
+        }
     }
 }
