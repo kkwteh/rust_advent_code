@@ -7,13 +7,15 @@ mod year19day17 {
         Scaffold,
     }
 
+    #[derive(Debug)]
     enum Direction {
-        Up,
-        Down,
-        Left,
-        Right,
+        U,
+        D,
+        L,
+        R,
     }
 
+    #[derive(Debug)]
     struct Ship {
         x: usize,
         y: usize,
@@ -25,7 +27,7 @@ mod year19day17 {
         let mut ship = Ship {
             x: 0,
             y: 0,
-            direction: Direction::Down,
+            direction: Direction::D,
         };
         ctx.run_to_next_input_or_done();
         let outputs = ctx.outputs;
@@ -34,39 +36,49 @@ mod year19day17 {
         let mut y = 0;
         for s in outputs {
             match &s[..] {
-                "46" => current_line.push(Tile::Empty),
-                "35" => current_line.push(Tile::Scaffold),
+                "46" => {
+                    current_line.push(Tile::Empty);
+                    x += 1;
+                }
+                "35" => {
+                    current_line.push(Tile::Scaffold);
+                    x += 1;
+                }
                 "118" => {
                     current_line.push(Tile::Scaffold);
                     ship = Ship {
                         x,
                         y,
-                        direction: Direction::Down,
+                        direction: Direction::D,
                     };
+                    x += 1;
                 }
                 "60" => {
                     current_line.push(Tile::Scaffold);
                     ship = Ship {
                         x,
                         y,
-                        direction: Direction::Left,
+                        direction: Direction::L,
                     };
+                    x += 1;
                 }
                 "62" => {
                     current_line.push(Tile::Scaffold);
                     ship = Ship {
                         x,
                         y,
-                        direction: Direction::Right,
+                        direction: Direction::R,
                     };
+                    x += 1;
                 }
                 "94" => {
                     current_line.push(Tile::Scaffold);
                     ship = Ship {
                         x,
                         y,
-                        direction: Direction::Up,
+                        direction: Direction::U,
                     };
+                    x += 1;
                 }
                 "10" => {
                     field.push(current_line);
@@ -76,7 +88,6 @@ mod year19day17 {
                 }
                 st => panic!("Unexpected string {}", st),
             }
-            x += 1;
         }
         field.pop(); // pop last empty line
         let line_length = field[0].len();
@@ -84,6 +95,14 @@ mod year19day17 {
         let mut alignment_sum = 0;
         for (y, line) in field.iter().enumerate() {
             for (x, tile) in line.iter().enumerate() {
+                if (x, y) == (ship.x, ship.y) {
+                    print!("{:?}", ship.direction);
+                } else {
+                    match tile {
+                        Tile::Empty => print!("."),
+                        Tile::Scaffold => print!("#"),
+                    }
+                }
                 if x == 0 || y == 0 || x == line_length - 1 || y == num_lines - 1 {
                     continue;
                 }
@@ -92,7 +111,6 @@ mod year19day17 {
                         if let Tile::Scaffold = field[y + 1][x] {
                             if let Tile::Scaffold = field[y][x - 1] {
                                 if let Tile::Scaffold = field[y][x + 1] {
-                                    println!("Found intersection at ({}, {})", x, y);
                                     alignment_sum += x * y;
                                 }
                             }
@@ -100,8 +118,10 @@ mod year19day17 {
                     }
                 }
             }
+            println!("")
         }
         println!("Alignment sum {}", alignment_sum);
+        println!("Ship location {:?}", ship);
     }
 
     #[cfg(test)]
@@ -116,11 +136,6 @@ mod year19day17 {
                 let ctx = intcode::build_program_context(program, vec![]);
                 load_scaffold(ctx);
             }
-        }
-
-        #[test]
-        fn enum_equality() {
-            let foo = Tile::Empty;
         }
     }
 }
