@@ -83,41 +83,41 @@ mod year19day11 {
     }
 
     fn run_paint_program(
-        program: Vec<String>,
+        program: Vec<i64>,
         robot: &mut Robot,
         // BTreeMap wasn't actually helpful because of gaps in the paint.
         paint: &mut BTreeMap<Location, Color>,
     ) {
         let mut ctx = intcode::build_program_context(program, vec![]);
         let mut color: Color;
-        const BLACK_STRING: &str = "0";
-        const WHITE_STRING: &str = "1";
-        const LEFT_STRING: &str = "0";
-        const RIGHT_STRING: &str = "1";
+        const BLACK_INT: i64 = 0;
+        const WHITE_INT: i64 = 1;
+        const LEFT_INT: i64 = 0;
+        const RIGHT_INT: i64 = 1;
         loop {
             match paint.get(&robot.location) {
                 None => color = Color::Black,
                 Some(value) => color = *value,
             }
             match color {
-                Color::Black => ctx.inputs.push((*BLACK_STRING).to_string()),
-                Color::White => ctx.inputs.push((*WHITE_STRING).to_string()),
+                Color::Black => ctx.inputs.push(BLACK_INT),
+                Color::White => ctx.inputs.push(WHITE_INT),
             }
             ctx.run_to_next_input_or_done();
-            let paint_instruction = &ctx.outputs[ctx.outputs.len() - 2][..];
-            let move_instruction = &ctx.outputs[ctx.outputs.len() - 1][..];
+            let paint_instruction = ctx.outputs[ctx.outputs.len() - 2];
+            let move_instruction = ctx.outputs[ctx.outputs.len() - 1];
             match paint_instruction {
-                BLACK_STRING => {
+                BLACK_INT => {
                     paint.insert(robot.location.clone(), Color::Black);
                 }
-                WHITE_STRING => {
+                WHITE_INT => {
                     paint.insert(robot.location.clone(), Color::White);
                 }
                 _ => panic!("Unexepcted paint instruction {}", paint_instruction),
             };
             match move_instruction {
-                LEFT_STRING => robot.turn_left(),
-                RIGHT_STRING => robot.turn_right(),
+                LEFT_INT => robot.turn_left(),
+                RIGHT_INT => robot.turn_right(),
                 _ => panic!("Unexepcted move instruction {}", move_instruction),
             };
             robot.move_forward();

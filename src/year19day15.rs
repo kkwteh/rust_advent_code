@@ -19,43 +19,43 @@ mod year19day15 {
     }
 
     impl Location {
-        fn north(&self) -> (Location, String) {
+        fn north(&self) -> (Location, i64) {
             (
                 Location {
                     x: self.x,
                     y: self.y - 1,
                 },
-                "1".to_string(),
+                1,
             )
         }
 
-        fn south(&self) -> (Location, String) {
+        fn south(&self) -> (Location, i64) {
             (
                 Location {
                     x: self.x,
                     y: self.y + 1,
                 },
-                "2".to_string(),
+                2,
             )
         }
 
-        fn west(&self) -> (Location, String) {
+        fn west(&self) -> (Location, i64) {
             (
                 Location {
                     x: self.x - 1,
                     y: self.y,
                 },
-                "3".to_string(),
+                3,
             )
         }
 
-        fn east(&self) -> (Location, String) {
+        fn east(&self) -> (Location, i64) {
             (
                 Location {
                     x: self.x + 1,
                     y: self.y,
                 },
-                "4".to_string(),
+                4,
             )
         }
     }
@@ -96,15 +96,15 @@ mod year19day15 {
             }
             let mut path = paths.pop_front().unwrap();
             path.ctx.run_to_next_input_or_done();
-            match &path.ctx.outputs[path.ctx.outputs.len() - 1][..] {
-                "0" => {
+            match path.ctx.outputs[path.ctx.outputs.len() - 1] {
+                0 => {
                     known_locs.insert(path.location, Tile::Wall);
                     continue;
                 }
-                "1" => {
+                1 => {
                     known_locs.insert(path.location, Tile::Empty);
                 }
-                "2" => {
+                2 => {
                     known_locs.insert(path.location, Tile::OxygenSystem);
                     oxygen_system_location = Some(path.location);
                     println!(

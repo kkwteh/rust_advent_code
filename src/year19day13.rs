@@ -42,7 +42,7 @@ mod year19day13 {
 
     #[derive(Clone)]
     struct ScreenPrinter {
-        output: Vec<String>,
+        output: Vec<i64>,
         cursor: usize,
         screen: BTreeMap<Location, Tile>,
         score: i64,
@@ -55,19 +55,19 @@ mod year19day13 {
                 let mut y: i64;
                 let mut tile = Tile::Empty;
                 let mut score: i64;
-                x = self.output[self.cursor].parse::<i64>().unwrap();
-                y = self.output[self.cursor + 1].parse::<i64>().unwrap();
+                x = self.output[self.cursor];
+                y = self.output[self.cursor + 1];
                 if x != -1 {
-                    match &self.output[self.cursor + 2][..] {
-                        "0" => tile = Tile::Empty,
-                        "1" => tile = Tile::Wall,
-                        "2" => tile = Tile::Block,
-                        "3" => tile = Tile::HorPaddle,
-                        "4" => tile = Tile::Ball,
+                    match self.output[self.cursor + 2] {
+                        0 => tile = Tile::Empty,
+                        1 => tile = Tile::Wall,
+                        2 => tile = Tile::Block,
+                        3 => tile = Tile::HorPaddle,
+                        4 => tile = Tile::Ball,
                         _ => panic!("Unexpected tile type"),
                     };
                 } else {
-                    self.score = self.output[self.cursor + 2].parse::<i64>().unwrap();
+                    self.score = self.output[self.cursor + 2];
                 }
                 self.cursor += 3;
                 if x != -1 {
@@ -114,7 +114,7 @@ mod year19day13 {
         if let Ok(input) = readresult {
             let term = Term::stdout();
             let mut program = intcode::read_tokens(&input);
-            program[0] = "2".to_string();
+            program[0] = 2;
             let mut ctx = intcode::build_program_context(program, vec![]);
             let mut screen_printer = ScreenPrinter {
                 output: ctx.outputs.clone(),
@@ -133,11 +133,11 @@ mod year19day13 {
                 screen_printer.update_screen();
                 match term.read_char() {
                     // left
-                    Ok('j') => ctx.inputs.push("-1".to_string()),
+                    Ok('j') => ctx.inputs.push(-1),
                     // neutral
-                    Ok('k') => ctx.inputs.push("0".to_string()),
+                    Ok('k') => ctx.inputs.push(0),
                     //right
-                    Ok('l') => ctx.inputs.push("1".to_string()),
+                    Ok('l') => ctx.inputs.push(1),
                     Ok('r') => {
                         ctx = prev_ctxs.pop_back().unwrap();
                         screen_printer = prev_screen_printers.pop_back().unwrap();

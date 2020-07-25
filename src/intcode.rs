@@ -21,9 +21,9 @@ pub mod intcode {
 
     #[derive(Clone, Debug)]
     pub struct ProgramContext {
-        program: Vec<String>,
-        pub inputs: Vec<String>,
-        pub outputs: Vec<String>,
+        program: Vec<i64>,
+        pub inputs: Vec<i64>,
+        pub outputs: Vec<i64>,
         pcursor: usize,
         icursor: usize,
         pub done: bool,
@@ -34,7 +34,7 @@ pub mod intcode {
     impl ProgramContext {
         pub fn run_to_next_input_or_done(&mut self) {
             while !self.done {
-                let opcode = unpack_opcode(&self.program[self.pcursor]);
+                let opcode = unpack_opcode(self.program[self.pcursor]);
                 self.parameter_modes = opcode.parameter_modes;
                 if let Err(_e) = (opcode.operator)(self) {
                     return;
@@ -44,11 +44,11 @@ pub mod intcode {
         }
     }
 
-    pub fn build_program_context(program: Vec<String>, input: Vec<String>) -> ProgramContext {
+    pub fn build_program_context(program: Vec<i64>, input: Vec<i64>) -> ProgramContext {
         ProgramContext {
             program: program,
             inputs: input,
-            outputs: Vec::<String>::new(),
+            outputs: Vec::<i64>::new(),
             pcursor: 0,
             icursor: 0,
             done: false,
@@ -66,23 +66,21 @@ pub mod intcode {
     fn read_parameter(ctx: &ProgramContext, ix: usize) -> i64 {
         match ctx.parameter_modes[ix] {
             ParameterMode::Position => {
-                let position = ctx.program[ctx.pcursor + ix + 1].parse::<usize>().unwrap();
+                let position = ctx.program[ctx.pcursor + ix + 1] as usize;
                 match position >= ctx.program.len() {
                     true => 0,
-                    false => ctx.program[position].parse::<i64>().unwrap(),
+                    false => ctx.program[position],
                 }
             }
             ParameterMode::Immediate => match ctx.pcursor + ix + 1 >= ctx.program.len() {
                 true => 0,
-                false => ctx.program[ctx.pcursor + ix + 1].parse::<i64>().unwrap(),
+                false => ctx.program[ctx.pcursor + ix + 1],
             },
             ParameterMode::Relative => {
-                let position = ctx.program[ctx.pcursor + ix + 1].parse::<i64>().unwrap();
+                let position = ctx.program[ctx.pcursor + ix + 1];
                 match position + ctx.relative_base >= ctx.program.len() as i64 {
                     true => 0,
-                    false => ctx.program[(position + ctx.relative_base) as usize]
-                        .parse::<i64>()
-                        .unwrap(),
+                    false => ctx.program[(position + ctx.relative_base) as usize],
                 }
             }
         }
@@ -90,11 +88,10 @@ pub mod intcode {
 
     fn get_write_position(ctx: &ProgramContext, ix: usize) -> usize {
         match ctx.parameter_modes[ix] {
-            ParameterMode::Position => ctx.program[ctx.pcursor + ix + 1].parse::<usize>().unwrap(),
+            ParameterMode::Position => ctx.program[ctx.pcursor + ix + 1] as usize,
             ParameterMode::Immediate => panic!("Encountered immediate mode for _Copy operator"),
             ParameterMode::Relative => {
-                (ctx.program[ctx.pcursor + ix + 1].parse::<i64>().unwrap() + ctx.relative_base)
-                    as usize
+                (ctx.program[ctx.pcursor + ix + 1] + ctx.relative_base) as usize
             }
         }
     }
@@ -103,11 +100,7 @@ pub mod intcode {
         let operand_a = read_parameter(&ctx, 0);
         let operand_b = read_parameter(&ctx, 1);
         let operand_c = get_write_position(&ctx, 2);
-        write_program(
-            &mut ctx.program,
-            operand_c,
-            (operand_a + operand_b).to_string(),
-        );
+        write_program(&mut ctx.program, operand_c, operand_a + operand_b);
         ctx.pcursor += 4;
         Ok(())
     }
@@ -116,11 +109,7 @@ pub mod intcode {
         let operand_a = read_parameter(&ctx, 0);
         let operand_b = read_parameter(&ctx, 1);
         let operand_c = get_write_position(&ctx, 2);
-        write_program(
-            &mut ctx.program,
-            operand_c,
-            (operand_a * operand_b).to_string(),
-        );
+        write_program(&mut ctx.program, operand_c, operand_a * operand_b);
         ctx.pcursor += 4;
         Ok(())
     }
@@ -142,7 +131,7 @@ pub mod intcode {
 
     fn output(ctx: &mut ProgramContext) -> Result<(), i64> {
         let operand = read_parameter(&ctx, 0);
-        ctx.outputs.push(operand.to_string());
+        ctx.outputs.push(operand);
         ctx.pcursor += 2;
         Ok(())
     }
@@ -177,9 +166,9 @@ pub mod intcode {
         let operand_b = read_parameter(&ctx, 1);
         let operand_c = get_write_position(&ctx, 2);
         if operand_a < operand_b {
-            write_program(&mut ctx.program, operand_c, "1".to_string())
+            write_program(&mut ctx.program, operand_c, 1)
         } else {
-            write_program(&mut ctx.program, operand_c, "0".to_string())
+            write_program(&mut ctx.program, operand_c, 0)
         }
         ctx.pcursor += 4;
         Ok(())
@@ -189,17 +178,17 @@ pub mod intcode {
         let operand_b = read_parameter(&ctx, 1);
         let operand_c = get_write_position(&ctx, 2);
         if operand_a == operand_b {
-            write_program(&mut ctx.program, operand_c, "1".to_string())
+            write_program(&mut ctx.program, operand_c, 1)
         } else {
-            write_program(&mut ctx.program, operand_c, "0".to_string())
+            write_program(&mut ctx.program, operand_c, 0)
         }
         ctx.pcursor += 4;
         Ok(())
     }
 
-    fn write_program(program: &mut Vec<String>, index: usize, value: String) {
+    fn write_program(program: &mut Vec<i64>, index: usize, value: i64) {
         if index >= program.len() {
-            program.resize(index + 1, "0".to_string());
+            program.resize(index + 1, 0);
         }
         program[index] = value;
     }
@@ -211,20 +200,20 @@ pub mod intcode {
         Ok(())
     }
 
-    pub fn read_tokens(tokens: &str) -> Vec<String> {
+    pub fn read_tokens(tokens: &str) -> Vec<i64> {
         let mut result = Vec::new();
 
         for token in (*tokens).split(",") {
-            result.push(token.to_string());
+            result.push(token.parse::<i64>().unwrap());
         }
         result
     }
 
-    pub fn run_program(program: Vec<String>, input: Vec<String>) -> Vec<String> {
+    pub fn run_program(program: Vec<i64>, input: Vec<i64>) -> Vec<i64> {
         let mut ctx = ProgramContext {
             program: program,
             inputs: input,
-            outputs: Vec::<String>::new(),
+            outputs: Vec::<i64>::new(),
             pcursor: 0,
             icursor: 0,
             done: false,
@@ -232,7 +221,7 @@ pub mod intcode {
             relative_base: 0,
         };
         while !ctx.done {
-            let opcode = unpack_opcode(&ctx.program[ctx.pcursor]);
+            let opcode = unpack_opcode(ctx.program[ctx.pcursor]);
             ctx.parameter_modes = opcode.parameter_modes;
             if let Err(_e) = (opcode.operator)(&mut ctx) {
                 panic!("Unexpected error during operation.")
@@ -241,13 +230,13 @@ pub mod intcode {
         ctx.outputs.clone()
     }
 
-    pub fn run_multiprogram(program: Vec<String>, inputs: Vec<Vec<String>>) -> i64 {
+    pub fn run_multiprogram(program: Vec<i64>, inputs: Vec<Vec<i64>>) -> i64 {
         let mut ctxs = Vec::<ProgramContext>::new();
         for input in inputs {
             ctxs.push(ProgramContext {
                 program: program.clone(),
                 inputs: input,
-                outputs: Vec::<String>::new(),
+                outputs: Vec::<i64>::new(),
                 pcursor: 0,
                 icursor: 0,
                 done: false,
@@ -258,7 +247,7 @@ pub mod intcode {
 
         let mut ctx_cursor = 0;
         loop {
-            let opcode = unpack_opcode(&ctxs[ctx_cursor].program[ctxs[ctx_cursor].pcursor]);
+            let opcode = unpack_opcode(ctxs[ctx_cursor].program[ctxs[ctx_cursor].pcursor]);
             ctxs[ctx_cursor].parameter_modes = opcode.parameter_modes;
             match (opcode.operator)(&mut ctxs[ctx_cursor]) {
                 Ok(()) => {
@@ -301,9 +290,9 @@ pub mod intcode {
             .unwrap()
     }
 
-    fn unpack_opcode(opcode_string: &String) -> OpCode {
+    fn unpack_opcode(opcode: i64) -> OpCode {
         // lpad with 0's to length 5
-        let padded_opcode = format!("{:0>5}", opcode_string);
+        let padded_opcode = format!("{:0>5}", opcode.to_owned());
         let mut parameter_modes = Vec::<ParameterMode>::new();
         for c in padded_opcode[..3].chars().rev() {
             match c {
@@ -365,7 +354,7 @@ pub mod intcode {
                 parameter_modes: parameter_modes,
                 op_type: OpType::Halt,
             },
-            _ => panic!("Unexpected opcode input {}", opcode_string),
+            _ => panic!("Unexpected opcode input {}", opcode),
         }
     }
 
@@ -376,23 +365,23 @@ pub mod intcode {
         fn test_run_to_next_input_or_done() {
             let tokens = "3,9,8,9,10,9,4,9,99,-1,8";
             let program = read_tokens(tokens);
-            let input = vec!["8".to_string()];
+            let input = vec![8];
             let mut ctx = build_program_context(program, input);
             ctx.run_to_next_input_or_done();
-            assert_eq!(ctx.outputs[0], "1".to_string());
+            assert_eq!(ctx.outputs[0], 1);
             assert_eq!(ctx.done, true);
         }
         #[test]
         fn test_run_to_next_input_or_done_need_input() {
             let tokens = "3,9,8,9,10,9,4,9,99,-1,8";
             let program = read_tokens(tokens);
-            let mut ctx = build_program_context(program, Vec::<String>::new());
+            let mut ctx = build_program_context(program, Vec::<i64>::new());
             ctx.run_to_next_input_or_done();
             assert_eq!(ctx.done, false);
-            ctx.inputs.push("8".to_string());
+            ctx.inputs.push(8);
             ctx.run_to_next_input_or_done();
             assert_eq!(ctx.done, true);
-            assert_eq!(ctx.outputs[0], "1".to_string());
+            assert_eq!(ctx.outputs[0], 1);
         }
 
         #[test]
@@ -402,7 +391,7 @@ pub mod intcode {
 
         #[test]
         fn test_unpack_opcode() {
-            let result = unpack_opcode(&"1102".to_string());
+            let result = unpack_opcode(1102);
             assert_eq!(
                 result.parameter_modes,
                 vec![
@@ -415,7 +404,7 @@ pub mod intcode {
 
         #[test]
         fn test_unpack_opcode_weird_case() {
-            let result = unpack_opcode(&"104".to_string());
+            let result = unpack_opcode(104);
             assert_eq!(
                 result.parameter_modes,
                 vec![

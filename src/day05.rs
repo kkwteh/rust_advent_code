@@ -9,7 +9,7 @@ mod day05 {
         match readresult {
             Ok(input) => {
                 let program = intcode::read_tokens(&input);
-                let input = vec!["1".to_string()];
+                let input = vec![1];
                 let output = intcode::run_program(program, input);
                 println!("THE ANSWER TO DAY 5 PART 1 IS {}", output.last().unwrap())
             }
@@ -21,99 +21,99 @@ mod day05 {
     fn day_five_part_two_example_01() {
         let tokens = "3,9,8,9,10,9,4,9,99,-1,8";
         let program = intcode::read_tokens(tokens);
-        let input = vec!["8".to_string()];
+        let input = vec![8];
         let output = intcode::run_program(program, input);
-        assert_eq!(output[0], "1".to_string());
+        assert_eq!(output[0], 1);
     }
 
     #[test]
     fn day_five_part_two_example_02() {
         let tokens = "3,9,8,9,10,9,4,9,99,-1,8";
         let program = intcode::read_tokens(tokens);
-        let input = vec!["9999".to_string()];
+        let input = vec![9999];
         let output = intcode::run_program(program, input);
-        assert_eq!(output[0], "0".to_string());
+        assert_eq!(output[0], 0);
     }
 
     #[test]
     fn day_five_part_two_example_03() {
         let tokens = "3,3,1108,-1,8,3,4,3,99";
         let program = intcode::read_tokens(tokens);
-        let input = vec!["8".to_string()];
+        let input = vec![8];
         let output = intcode::run_program(program, input);
-        assert_eq!(output[0], "1".to_string());
+        assert_eq!(output[0], 1);
     }
 
     #[test]
     fn day_five_part_two_example_04() {
         let tokens = "3,3,1108,-1,8,3,4,3,99";
         let program = intcode::read_tokens(tokens);
-        let input = vec!["9999".to_string()];
+        let input = vec![9999];
         let output = intcode::run_program(program, input);
-        assert_eq!(output[0], "0".to_string());
+        assert_eq!(output[0], 0);
     }
 
     #[test]
     fn day_five_part_two_example_05() {
         let tokens = "3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9";
         let program = intcode::read_tokens(tokens);
-        let input = vec!["0".to_string()];
+        let input = vec![0];
         let output = intcode::run_program(program, input);
-        assert_eq!(output[0], "0".to_string());
+        assert_eq!(output[0], 0);
     }
 
     #[test]
     fn day_five_part_two_example_06() {
         let tokens = "3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9";
         let program = intcode::read_tokens(tokens);
-        let input = vec!["2".to_string()];
+        let input = vec![2];
         let output = intcode::run_program(program, input);
-        assert_eq!(output[0], "1".to_string());
+        assert_eq!(output[0], 1);
     }
 
     #[test]
     fn day_five_part_two_example_07() {
         let tokens = "3,3,1105,-1,9,1101,0,0,12,4,12,99,1";
         let program = intcode::read_tokens(tokens);
-        let input = vec!["0".to_string()];
+        let input = vec![0];
         let output = intcode::run_program(program, input);
-        assert_eq!(output[0], "0".to_string());
+        assert_eq!(output[0], 0);
     }
 
     #[test]
     fn day_five_part_two_example_08() {
         let tokens = "3,3,1105,-1,9,1101,0,0,12,4,12,99,1";
         let program = intcode::read_tokens(tokens);
-        let input = vec!["2".to_string()];
+        let input = vec![2];
         let output = intcode::run_program(program, input);
-        assert_eq!(output[0], "1".to_string());
+        assert_eq!(output[0], 1);
     }
 
     #[test]
     fn day_five_part_two_example_09() {
         let tokens = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99";
         let program = intcode::read_tokens(tokens);
-        let input = vec!["7".to_string()];
+        let input = vec![7];
         let output = intcode::run_program(program, input);
-        assert_eq!(output[0], "999".to_string());
+        assert_eq!(output[0], 999);
     }
 
     #[test]
     fn day_five_part_two_example_10() {
         let tokens = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99";
         let program = intcode::read_tokens(tokens);
-        let input = vec!["8".to_string()];
+        let input = vec![8];
         let output = intcode::run_program(program, input);
-        assert_eq!(output[0], "1000".to_string());
+        assert_eq!(output[0], 1000);
     }
 
     #[test]
     fn day_five_part_two_example_11() {
         let tokens = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99";
         let program = intcode::read_tokens(tokens);
-        let input = vec!["9".to_string()];
+        let input = vec![9];
         let output = intcode::run_program(program, input);
-        assert_eq!(output[0], "1001".to_string());
+        assert_eq!(output[0], 1001);
     }
 
     #[test]
@@ -122,7 +122,7 @@ mod day05 {
         match readresult {
             Ok(input) => {
                 let program = intcode::read_tokens(&input);
-                let input = vec!["5".to_string()];
+                let input = vec![5];
                 let output = intcode::run_program(program, input);
                 println!("THE ANSWER TO DAY FIVE PART TWO IS {}", output[0])
             }

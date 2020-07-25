@@ -1,5 +1,6 @@
 mod year19day17 {
     use crate::intcode::intcode;
+    use std::convert::TryFrom;
     use std::fs::OpenOptions;
     use std::io::prelude::*;
 
@@ -36,17 +37,17 @@ mod year19day17 {
         let mut current_line = Vec::<Tile>::new();
         let mut x = 0;
         let mut y = 0;
-        for s in outputs {
-            match &s[..] {
-                "46" => {
+        for out in outputs {
+            match out {
+                46 => {
                     current_line.push(Tile::Empty);
                     x += 1;
                 }
-                "35" => {
+                35 => {
                     current_line.push(Tile::Scaffold);
                     x += 1;
                 }
-                "118" => {
+                118 => {
                     current_line.push(Tile::Scaffold);
                     ship = Ship {
                         x,
@@ -55,7 +56,7 @@ mod year19day17 {
                     };
                     x += 1;
                 }
-                "60" => {
+                60 => {
                     current_line.push(Tile::Scaffold);
                     ship = Ship {
                         x,
@@ -64,7 +65,7 @@ mod year19day17 {
                     };
                     x += 1;
                 }
-                "62" => {
+                62 => {
                     current_line.push(Tile::Scaffold);
                     ship = Ship {
                         x,
@@ -73,7 +74,7 @@ mod year19day17 {
                     };
                     x += 1;
                 }
-                "94" => {
+                94 => {
                     current_line.push(Tile::Scaffold);
                     ship = Ship {
                         x,
@@ -82,13 +83,13 @@ mod year19day17 {
                     };
                     x += 1;
                 }
-                "10" => {
+                10 => {
                     field.push(current_line);
                     current_line = Vec::<Tile>::new();
                     x = 0;
                     y += 1;
                 }
-                st => panic!("Unexpected string {}", st),
+                out => panic!("Unexpected string {}", out),
             }
         }
         field.pop(); // pop last empty line
@@ -153,7 +154,7 @@ mod year19day17 {
             .open("adventoutputs/year19day17parttwo.txt")
             .unwrap();
         for output in ctx.outputs.iter() {
-            match output.parse::<u8>() {
+            match u8::try_from(*output) {
                 Ok(c) => write!(file, "{}", c as char),
                 Err(e) => write!(file, "{}", output),
             };
