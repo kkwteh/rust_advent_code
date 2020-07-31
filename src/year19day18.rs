@@ -1,5 +1,12 @@
 mod year19day18 {
+    use lazy_static::lazy_static;
     use std::collections::{HashMap, HashSet, VecDeque};
+
+    use std::sync::Mutex;
+
+    lazy_static! {
+        static ref COMPUTED_MINIMA: Mutex<HashMap<String, i64>> = Mutex::new(HashMap::new());
+    }
 
     fn letters() -> HashSet<char> {
         vec![
@@ -13,7 +20,6 @@ mod year19day18 {
     fn read_input(s: &str) -> Vec<Vec<char>> {
         let mut result = Vec::<Vec<char>>::new();
         for line in (*s).split("\n") {
-            // let foo: Vec<char> = line.to_owned().chars().map(|c| c).collect();
             let line_chars: Vec<char> = line.to_owned().chars().collect();
             result.push(line_chars);
         }
@@ -35,26 +41,45 @@ mod year19day18 {
     }
     impl Eq for Position {}
 
-    fn minimize(field: Vec<Vec<char>>, num_steps: i64) -> i64 {
+    fn minimize(field: Vec<Vec<char>>) -> i64 {
         let distance_map = distance_to_letters(field.clone());
         if distance_map.len() == 0 {
-            return num_steps;
+            return 0;
+        }
+        let mut field_as_string = "".to_owned();
+        for line in field.clone() {
+            let line_as_string: String = line.into_iter().collect();
+            field_as_string.push_str(&line_as_string);
+            field_as_string.push_str("\n");
+        }
+        if let Some(value) = COMPUTED_MINIMA
+            .lock()
+            .unwrap()
+            .get(&field_as_string.clone())
+        {
+            // println!("Already computed minima {}", value);
+            // println!("{}", field_as_string.clone());
+            return *value;
         }
 
         let mut result = i64::max_value();
         for (key, distance) in &distance_map {
             let new_field = collect_key(field.clone(), *key);
-            let candidate_value = minimize(new_field.clone(), num_steps + distance);
-            println!("Collecting {}", *key);
-            println!("Distance so far: {}", num_steps + distance);
-            println!("Min steps: {}", candidate_value);
-            for line in new_field {
-                println!("{:?}", line);
+            let candidate_value = minimize(new_field.clone());
+            if candidate_value + distance < result {
+                result = candidate_value + distance;
             }
-            if candidate_value < result {
-                result = candidate_value;
-            }
+            // println!("Collecting {}", *key);
+            // println!("Distance so far: {}", num_steps + distance);
+            // println!("Min steps: {}", candidate_value);
+            // for line in new_field {
+            //     println!("{:?}", line);
+            // }
         }
+        COMPUTED_MINIMA
+            .lock()
+            .unwrap()
+            .insert(field_as_string.clone(), result);
         result
     }
 
@@ -168,7 +193,34 @@ mod year19day18 {
 #d.....................#
 ########################";
             let field = read_input(input);
-            minimize(field, 0);
+            assert_eq!(86, minimize(field));
+        }
+
+        #[test]
+        fn day_eighteen_part_one_second_example() {
+            let input = "########################
+#@..............ac.GI.b#
+###d#e#f################
+###A#B#C################
+###g#h#i################
+########################";
+            let field = read_input(input);
+            assert_eq!(81, minimize(field));
+        }
+
+        #[test]
+        fn day_eighteen_part_one_third_example() {
+            let input = "#################
+#i.G..c...e..H.p#
+########.########
+#j.A..b...f..D.o#
+########@########
+#k.E..a...g..B.n#
+########.########
+#l.F..d...h..C.m#
+#################";
+            let field = read_input(input);
+            assert_eq!(136, minimize(field));
         }
     }
 }
