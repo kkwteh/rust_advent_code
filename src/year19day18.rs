@@ -21,13 +21,23 @@ mod year19day18 {
         .collect()
     }
 
-    fn read_input(s: &str) -> Vec<Vec<char>> {
+    fn string_to_field(s: &str) -> Vec<Vec<char>> {
         let mut result = Vec::<Vec<char>>::new();
         for line in (*s).split("\n") {
             let line_chars: Vec<char> = line.to_owned().chars().collect();
             result.push(line_chars);
         }
         result
+    }
+
+    fn field_to_string(field: Vec<Vec<char>>) -> String {
+        let mut field_as_string = "".to_owned();
+        for line in field.clone() {
+            let line_as_string: String = line.into_iter().collect();
+            field_as_string.push_str(&line_as_string);
+            field_as_string.push_str("\n");
+        }
+        field_as_string
     }
 
     #[derive(Debug, PartialEq, Hash, Clone, Copy)]
@@ -45,28 +55,17 @@ mod year19day18 {
     }
     impl Eq for Position {}
 
-    fn minimize(field: Vec<Vec<char>>, steps_so_far: i64) -> i64 {
-        let mut field_as_string = "".to_owned();
-        for line in field.clone() {
-            let line_as_string: String = line.into_iter().collect();
-            field_as_string.push_str(&line_as_string);
-            field_as_string.push_str("\n");
-        }
-        if let Some(value) = COMPUTED_MINIMA
-            .lock()
-            .unwrap()
-            .get(&field_as_string.clone())
-        {
+    fn minimize(input: String, steps_so_far: i64) -> i64 {
+        if let Some(value) = COMPUTED_MINIMA.lock().unwrap().get(&input.clone()) {
             // println!("Already computed minima {}", value);
             // println!("{}", field_as_string.clone());
             return *value;
         }
+
+        let field = string_to_field(&input[..]);
         let distance_map = distance_to_letters(field.clone());
         if distance_map.len() == 0 {
-            COMPUTED_MINIMA
-                .lock()
-                .unwrap()
-                .insert(field_as_string.clone(), 0);
+            COMPUTED_MINIMA.lock().unwrap().insert(input.clone(), 0);
             println!(
                 "Cached solutions: {}",
                 COMPUTED_MINIMA.lock().unwrap().len()
@@ -78,7 +77,7 @@ mod year19day18 {
         sorted_distances.sort_by(|a, b| a.1.cmp(b.1));
         for (key, distance) in sorted_distances.iter() {
             let new_field = collect_key(field.clone(), **key);
-            let candidate_value = minimize(new_field.clone(), steps_so_far + **distance);
+            let candidate_value = minimize(field_to_string(new_field), steps_so_far + **distance);
             if steps_so_far + **distance + candidate_value < CURRENT_MINIMUM.lock().unwrap()[0] {
                 println!(
                     "Setting new minimum {} + {} + {} = {}",
@@ -88,7 +87,7 @@ mod year19day18 {
                     steps_so_far + **distance + candidate_value
                 );
                 println!("Collecting {}", *key);
-                for line in field_as_string.split("\n") {
+                for line in input.split("\n") {
                     println!("{}", line);
                 }
                 CURRENT_MINIMUM.lock().unwrap()[0] = steps_so_far + **distance + candidate_value;
@@ -103,7 +102,7 @@ mod year19day18 {
             COMPUTED_MINIMA
                 .lock()
                 .unwrap()
-                .insert(field_as_string.clone(), result);
+                .insert(input.clone(), result);
             println!(
                 "Cached solutions: {}",
                 COMPUTED_MINIMA.lock().unwrap().len()
@@ -211,7 +210,7 @@ mod year19day18 {
 ########.########
 #l.F..d...h..C.m#
 #################";
-            let field = read_input(input);
+            let field = string_to_field(input);
             let new_field = collect_key(field, 'c');
         }
         #[test]
@@ -221,8 +220,7 @@ mod year19day18 {
 ######################.#
 #d.....................#
 ########################";
-            let field = read_input(input);
-            assert_eq!(86, minimize(field, 0));
+            assert_eq!(86, minimize(input.to_owned(), 0));
         }
 
         #[test]
@@ -233,8 +231,8 @@ mod year19day18 {
 ###A#B#C################
 ###g#h#i################
 ########################";
-            let field = read_input(input);
-            assert_eq!(81, minimize(field, 0));
+            let field = string_to_field(input);
+            assert_eq!(81, minimize(input.to_owned(), 0));
         }
 
         #[test]
@@ -248,8 +246,7 @@ mod year19day18 {
 ########.########
 #l.F..d...h..C.m#
 #################";
-            let field = read_input(input);
-            assert_eq!(136, minimize(field, 0));
+            assert_eq!(136, minimize(input.to_owned(), 0));
         }
 
         #[test]
@@ -259,8 +256,7 @@ mod year19day18 {
 #.######################
 #.....@.a.B.c.d.A.e.F.g#
 ########################";
-            let field = read_input(input);
-            assert_eq!(132, minimize(field, 0));
+            assert_eq!(132, minimize(input.to_owned(), 0));
         }
 
         #[test]
@@ -347,10 +343,9 @@ mod year19day18 {
 #.###.#.###.#.###.###.###.#####.#.#.###.#.#######.#########.#.###.#####.#.#####.#
 #.J...#.....#.........#...........#.....#.............H....o#...........#.......#
 #################################################################################";
-            let field = read_input(input);
             println!(
                 "THE ANSWER TO DAY EIGHTEEN PART ONE IS {}",
-                minimize(field, 0)
+                minimize(input.to_owned(), 0)
             );
         }
     }
