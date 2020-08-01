@@ -45,6 +45,7 @@ mod year19day18 {
         x: usize,
         y: usize,
         steps: i64,
+        actor: char,
     }
     impl Eq for DistancedPosition {}
 
@@ -54,6 +55,13 @@ mod year19day18 {
         y: usize,
     }
     impl Eq for Position {}
+
+    #[derive(Debug, PartialEq, Hash, Clone, Copy)]
+    struct ActorKey {
+        actor: char,
+        key: char,
+    }
+    impl Eq for ActorKey {}
 
     fn minimize(input: String, steps_so_far: i64) -> i64 {
         if let Some(value) = COMPUTED_MINIMA.lock().unwrap().get(&input.clone()) {
@@ -72,11 +80,11 @@ mod year19day18 {
             );
             return 0;
         }
-        let mut sorted_distances: Vec<(&char, &i64)> = distance_map.iter().collect();
+        let mut sorted_distances: Vec<(&ActorKey, &i64)> = distance_map.iter().collect();
         let mut result = 999999999999;
         sorted_distances.sort_by(|a, b| a.1.cmp(b.1));
-        for (key, distance) in sorted_distances.iter() {
-            let new_field = collect_key(field.clone(), **key);
+        for (actor_key, distance) in sorted_distances.iter() {
+            let new_field = collect_key(field.clone(), actor_key.key, actor_key.actor);
             let candidate_value = minimize(field_to_string(new_field), steps_so_far + **distance);
             if steps_so_far + **distance + candidate_value < CURRENT_MINIMUM.lock().unwrap()[0] {
                 println!(
@@ -86,7 +94,7 @@ mod year19day18 {
                     candidate_value,
                     steps_so_far + **distance + candidate_value
                 );
-                println!("Collecting {}", *key);
+                println!("Collecting {}", actor_key.key);
                 for line in input.split("\n") {
                     println!("{}", line);
                 }
@@ -111,8 +119,8 @@ mod year19day18 {
         result
     }
 
-    fn distance_to_letters(field: Vec<Vec<char>>) -> HashMap<char, i64> {
-        let mut result = HashMap::<char, i64>::new();
+    fn distance_to_letters(field: Vec<Vec<char>>) -> HashMap<ActorKey, i64> {
+        let mut result = HashMap::<ActorKey, i64>::new();
         let mut seen_positions = HashSet::<Position>::new();
         let mut work_queue = VecDeque::<DistancedPosition>::new();
         let mut xpos = 0;
@@ -129,6 +137,7 @@ mod year19day18 {
             x: xpos,
             y: ypos,
             steps: 0,
+            actor: '@',
         });
         seen_positions.insert(Position { x: xpos, y: ypos });
 
@@ -162,11 +171,18 @@ mod year19day18 {
                         x: new_pos.x,
                         y: new_pos.y,
                         steps: node.steps + 1,
+                        actor: '@',
                     });
                     seen_positions.insert(new_pos);
                 }
                 if let Some(letter) = letters().get(&c) {
-                    result.insert(*letter, node.steps + 1);
+                    result.insert(
+                        ActorKey {
+                            actor: '@',
+                            key: *letter,
+                        },
+                        node.steps + 1,
+                    );
                 }
             }
         }
@@ -174,16 +190,16 @@ mod year19day18 {
         result
     }
 
-    fn collect_key(field: Vec<Vec<char>>, key: char) -> Vec<Vec<char>> {
+    fn collect_key(field: Vec<Vec<char>>, key: char, actor: char) -> Vec<Vec<char>> {
         let mut result = Vec::<Vec<char>>::new();
         let upper_case_key = key.to_uppercase().next().unwrap();
         for (_j, _line) in field.iter().enumerate() {
             let mut line = Vec::<char>::new();
             for (_i, c) in _line.iter().enumerate() {
-                if c == &'@' {
+                if c == &actor {
                     line.push('.');
                 } else if c == &key {
-                    line.push('@');
+                    line.push(actor);
                 } else if c == &upper_case_key {
                     line.push('.');
                 } else {
@@ -211,7 +227,7 @@ mod year19day18 {
 #l.F..d...h..C.m#
 #################";
             let field = string_to_field(input);
-            let new_field = collect_key(field, 'c');
+            let new_field = collect_key(field, 'c', '@');
         }
         #[test]
         fn day_eighteen_part_one_example() {
