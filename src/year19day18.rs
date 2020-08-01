@@ -46,10 +46,6 @@ mod year19day18 {
     impl Eq for Position {}
 
     fn minimize(field: Vec<Vec<char>>, steps_so_far: i64) -> i64 {
-        let distance_map = distance_to_letters(field.clone());
-        if distance_map.len() == 0 {
-            return 0;
-        }
         let mut field_as_string = "".to_owned();
         for line in field.clone() {
             let line_as_string: String = line.into_iter().collect();
@@ -65,34 +61,40 @@ mod year19day18 {
             // println!("{}", field_as_string.clone());
             return *value;
         }
+        let distance_map = distance_to_letters(field.clone());
+        if distance_map.len() == 0 {
+            COMPUTED_MINIMA
+                .lock()
+                .unwrap()
+                .insert(field_as_string.clone(), 0);
+            println!(
+                "Cached solutions: {}",
+                COMPUTED_MINIMA.lock().unwrap().len()
+            );
+            return 0;
+        }
         let mut sorted_distances: Vec<(&char, &i64)> = distance_map.iter().collect();
         let mut result = 999999999999;
         sorted_distances.sort_by(|a, b| a.1.cmp(b.1));
         for (key, distance) in sorted_distances.iter() {
-            if steps_so_far + **distance < CURRENT_MINIMUM.lock().unwrap()[0] {
-                let new_field = collect_key(field.clone(), **key);
-                let candidate_value = minimize(new_field.clone(), steps_so_far + **distance);
-                if steps_so_far + **distance + candidate_value < CURRENT_MINIMUM.lock().unwrap()[0]
-                {
-                    println!(
-                        "Setting new minimum {} + {} + {} = {}",
-                        steps_so_far,
-                        **distance,
-                        candidate_value,
-                        steps_so_far + **distance + candidate_value
-                    );
-                    println!("Collecting {}", *key);
-                    for line in field_as_string.split("\n") {
-                        println!("{}", line);
-                    }
-                    CURRENT_MINIMUM.lock().unwrap()[0] =
-                        steps_so_far + **distance + candidate_value;
+            let new_field = collect_key(field.clone(), **key);
+            let candidate_value = minimize(new_field.clone(), steps_so_far + **distance);
+            if steps_so_far + **distance + candidate_value < CURRENT_MINIMUM.lock().unwrap()[0] {
+                println!(
+                    "Setting new minimum {} + {} + {} = {}",
+                    steps_so_far,
+                    **distance,
+                    candidate_value,
+                    steps_so_far + **distance + candidate_value
+                );
+                println!("Collecting {}", *key);
+                for line in field_as_string.split("\n") {
+                    println!("{}", line);
                 }
-                if candidate_value + **distance < result {
-                    result = candidate_value + **distance;
-                }
-            } else {
-                // println!("Already found a better solution. Skipping calculation")
+                CURRENT_MINIMUM.lock().unwrap()[0] = steps_so_far + **distance + candidate_value;
+            }
+            if candidate_value + **distance < result {
+                result = candidate_value + **distance;
             }
         }
         if result < 999999999999 {
@@ -102,6 +104,10 @@ mod year19day18 {
                 .lock()
                 .unwrap()
                 .insert(field_as_string.clone(), result);
+            println!(
+                "Cached solutions: {}",
+                COMPUTED_MINIMA.lock().unwrap().len()
+            );
         }
         result
     }
@@ -233,7 +239,6 @@ mod year19day18 {
 
         #[test]
         fn day_eighteen_part_one_third_example() {
-            // Test is failing
             let input = "#################
 #i.G..c...e..H.p#
 ########.########
