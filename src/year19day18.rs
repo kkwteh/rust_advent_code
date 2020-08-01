@@ -67,7 +67,7 @@ mod year19day18 {
         }
         let mut sorted_distances: Vec<(&char, &i64)> = distance_map.iter().collect();
         let mut result = 999999999999;
-        sorted_distances.sort_by(|a, b| b.1.cmp(a.1));
+        sorted_distances.sort_by(|a, b| a.1.cmp(b.1));
         for (key, distance) in sorted_distances.iter() {
             if steps_so_far + **distance < CURRENT_MINIMUM.lock().unwrap()[0] {
                 let new_field = collect_key(field.clone(), **key);
