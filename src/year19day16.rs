@@ -133,7 +133,6 @@ mod year19day16 {
     fn day_sixteen_part_one_challenge() {
         let readresult = fs::read_to_string("adventinputs/year19day16.txt");
         let mut input_phase: [i64; 650] = [0; 650];
-        let mut output_phase: [i64; 650] = [0; 650];
         if let Ok(input) = readresult {
             // populate input_phase
             for (i, c) in input.chars().enumerate() {
@@ -154,7 +153,6 @@ mod year19day16 {
                 input_phase[i] = c.to_string().parse::<i64>().unwrap();
             }
             let output_phase = compute_output_phase(input_phase, 100);
-            let result = &output_phase[0..8];
             let input_phase_tail: Vec<i64> = input_phase.to_vec().drain(325..).collect();
             let output_phase_tail = compute_output_tail(input_phase_tail, 100);
             let conventional_tail = output_phase[325..335].to_vec();

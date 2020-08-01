@@ -25,7 +25,7 @@ mod year19day17 {
         direction: Direction,
     }
 
-    fn load_scaffold(mut ctx: intcode::ProgramContext) {
+    fn _load_scaffold(mut ctx: intcode::ProgramContext) {
         let mut field: Vec<Vec<Tile>> = Vec::<Vec<Tile>>::new();
         let mut ship = Ship {
             x: 0,
@@ -155,51 +155,52 @@ mod year19day17 {
             .unwrap();
         for output in ctx.outputs.iter() {
             match u8::try_from(*output) {
-                Ok(c) => write!(file, "{}", c as char),
-                Err(e) => write!(file, "{}", output),
+                Ok(c) => {
+                    let _result = write!(file, "{}", c as char);
+                }
+                Err(_e) => {
+                    let _result = write!(file, "{}", output);
+                }
             };
         }
         println!("Output length: {}", ctx.outputs.len());
     }
 
-    #[cfg(test)]
-    mod test {
-        use super::*;
+    #[test]
+    fn day_seventeen_challenge_part_one() {
         use std::fs;
-        #[test]
-        fn day_seventeen_challenge_part_one() {
-            let readresult = fs::read_to_string("adventinputs/year19day17.txt");
-            if let Ok(input) = readresult {
-                let program = intcode::read_tokens(&input);
-                let ctx = intcode::build_program_context(program, vec![]);
-                load_scaffold(ctx);
-            }
+        let readresult = fs::read_to_string("adventinputs/year19day17.txt");
+        if let Ok(input) = readresult {
+            let program = intcode::read_tokens(&input);
+            let ctx = intcode::build_program_context(program, vec![]);
+            _load_scaffold(ctx);
         }
+    }
 
-        #[test]
-        fn day_seventeen_challenge_part_two() {
-            let mut readresult = fs::read_to_string("adventinputs/year19day17.txt");
-            if let Ok(input) = readresult.as_mut() {
-                input.replace_range(..1, "2");
-                let program = intcode::read_tokens(&input);
-                let ctx = intcode::build_program_context(program, vec![]);
-                navigate_scaffold(ctx);
-            }
+    #[test]
+    fn day_seventeen_challenge_part_two() {
+        use std::fs;
+        let mut readresult = fs::read_to_string("adventinputs/year19day17.txt");
+        if let Ok(input) = readresult.as_mut() {
+            input.replace_range(..1, "2");
+            let program = intcode::read_tokens(&input);
+            let ctx = intcode::build_program_context(program, vec![]);
+            navigate_scaffold(ctx);
         }
+    }
 
-        #[test]
-        fn replace_range() {
-            let mut s = String::from("123456");
-            s.replace_range(..1, "X");
-            assert_eq!(&s[..], "X23456");
-        }
+    #[test]
+    fn replace_range() {
+        let mut s = String::from("123456");
+        s.replace_range(..1, "X");
+        assert_eq!(&s[..], "X23456");
+    }
 
-        #[test]
-        fn string_across_multiple_lines() {
-            let string = "one line \
+    #[test]
+    fn string_across_multiple_lines() {
+        let string = "one line \
                           written over \
                           several";
-            assert_eq!(string, "one line written over several");
-        }
+        assert_eq!(string, "one line written over several");
     }
 }

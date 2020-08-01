@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 mod advent20191208;
 mod advent20191209;
 mod day01;

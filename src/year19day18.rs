@@ -12,7 +12,7 @@ mod year19day18 {
         static ref CURRENT_MINIMUM: Mutex<Vec<i64>> = Mutex::new(vec![999999999999]);
     }
 
-    fn letters() -> HashSet<char> {
+    fn _letters() -> HashSet<char> {
         vec![
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
             'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
@@ -21,7 +21,7 @@ mod year19day18 {
         .collect()
     }
 
-    fn string_to_field(s: &str) -> Vec<Vec<char>> {
+    fn _string_to_field(s: &str) -> Vec<Vec<char>> {
         let mut result = Vec::<Vec<char>>::new();
         for line in (*s).split("\n") {
             let line_chars: Vec<char> = line.to_owned().chars().collect();
@@ -30,7 +30,7 @@ mod year19day18 {
         result
     }
 
-    fn field_to_string(field: Vec<Vec<char>>) -> String {
+    fn _field_to_string(field: Vec<Vec<char>>) -> String {
         let mut field_as_string = "".to_owned();
         for line in field.clone() {
             let line_as_string: String = line.into_iter().collect();
@@ -63,15 +63,15 @@ mod year19day18 {
     }
     impl Eq for RobotKey {}
 
-    fn minimize(input: String, steps_so_far: i64) -> i64 {
+    fn _minimize(input: String, steps_so_far: i64) -> i64 {
         if let Some(value) = COMPUTED_MINIMA.lock().unwrap().get(&input.clone()) {
             // println!("Already computed minima {}", value);
             // println!("{}", field_as_string.clone());
             return *value;
         }
 
-        let field = string_to_field(&input[..]);
-        let distance_map = distance_to_letters(field.clone());
+        let field = _string_to_field(&input[..]);
+        let distance_map = _distance_to_letters(field.clone());
         if distance_map.len() == 0 {
             COMPUTED_MINIMA.lock().unwrap().insert(input.clone(), 0);
             println!(
@@ -84,8 +84,8 @@ mod year19day18 {
         let mut result = 999999999999;
         sorted_distances.sort_by(|a, b| a.1.cmp(b.1));
         for (robot_key, distance) in sorted_distances.iter() {
-            let new_field = collect_key(field.clone(), robot_key.key, robot_key.robot);
-            let candidate_value = minimize(field_to_string(new_field), steps_so_far + **distance);
+            let new_field = _collect_key(field.clone(), robot_key.key, robot_key.robot);
+            let candidate_value = _minimize(_field_to_string(new_field), steps_so_far + **distance);
             if steps_so_far + **distance + candidate_value < CURRENT_MINIMUM.lock().unwrap()[0] {
                 println!(
                     "Setting new minimum {} + {} + {} = {}",
@@ -119,7 +119,7 @@ mod year19day18 {
         result
     }
 
-    fn distance_to_letters(field: Vec<Vec<char>>) -> HashMap<RobotKey, i64> {
+    fn _distance_to_letters(field: Vec<Vec<char>>) -> HashMap<RobotKey, i64> {
         let mut result = HashMap::<RobotKey, i64>::new();
         let mut seen_positions = HashSet::<Position>::new();
         let mut work_queue = VecDeque::<DistancedPosition>::new();
@@ -172,7 +172,7 @@ mod year19day18 {
                     });
                     seen_positions.insert(new_pos);
                 }
-                if let Some(letter) = letters().get(&c) {
+                if let Some(letter) = _letters().get(&c) {
                     result.insert(
                         RobotKey {
                             robot: node.robot,
@@ -187,7 +187,7 @@ mod year19day18 {
         result
     }
 
-    fn collect_key(field: Vec<Vec<char>>, key: char, robot: char) -> Vec<Vec<char>> {
+    fn _collect_key(field: Vec<Vec<char>>, key: char, robot: char) -> Vec<Vec<char>> {
         let mut result = Vec::<Vec<char>>::new();
         let upper_case_key = key.to_uppercase().next().unwrap();
         for (_j, _line) in field.iter().enumerate() {
@@ -208,13 +208,9 @@ mod year19day18 {
         result
     }
 
-    #[cfg(test)]
-    mod test {
-        use super::*;
-
-        #[test]
-        fn test_collect_key() {
-            let input = "#################
+    #[test]
+    fn test_collect_key() {
+        let input = "#################
 #i.G..c...e..H.p#
 ########.########
 #j.A..b...f..D.o#
@@ -223,34 +219,33 @@ mod year19day18 {
 ########.########
 #l.F..d...h..C.m#
 #################";
-            let field = string_to_field(input);
-            let new_field = collect_key(field, 'c', '@');
-        }
-        #[test]
-        fn day_eighteen_part_one_example() {
-            let input = "########################
+        let field = _string_to_field(input);
+        let _new_field = _collect_key(field, 'c', '@');
+    }
+    #[test]
+    fn day_eighteen_part_one_example() {
+        let input = "########################
 #f.D.E.e.C.b.A.@.a.B.c.#
 ######################.#
 #d.....................#
 ########################";
-            assert_eq!(86, minimize(input.to_owned(), 0));
-        }
+        assert_eq!(86, _minimize(input.to_owned(), 0));
+    }
 
-        #[test]
-        fn day_eighteen_part_one_second_example() {
-            let input = "########################
+    #[test]
+    fn day_eighteen_part_one_second_example() {
+        let input = "########################
 #@..............ac.GI.b#
 ###d#e#f################
 ###A#B#C################
 ###g#h#i################
 ########################";
-            let field = string_to_field(input);
-            assert_eq!(81, minimize(input.to_owned(), 0));
-        }
+        assert_eq!(81, _minimize(input.to_owned(), 0));
+    }
 
-        #[test]
-        fn day_eighteen_part_one_third_example() {
-            let input = "#################
+    #[test]
+    fn day_eighteen_part_one_third_example() {
+        let input = "#################
 #i.G..c...e..H.p#
 ########.########
 #j.A..b...f..D.o#
@@ -259,22 +254,22 @@ mod year19day18 {
 ########.########
 #l.F..d...h..C.m#
 #################";
-            assert_eq!(136, minimize(input.to_owned(), 0));
-        }
+        assert_eq!(136, _minimize(input.to_owned(), 0));
+    }
 
-        #[test]
-        fn day_eighteen_part_one_fourth_example() {
-            let input = "########################
+    #[test]
+    fn day_eighteen_part_one_fourth_example() {
+        let input = "########################
 #...............b.C.D.f#
 #.######################
 #.....@.a.B.c.d.A.e.F.g#
 ########################";
-            assert_eq!(132, minimize(input.to_owned(), 0));
-        }
+        assert_eq!(132, _minimize(input.to_owned(), 0));
+    }
 
-        #[test]
-        fn day_eighteen_part_two_distance_to_letters() {
-            let input = "#############
+    #[test]
+    fn day_eighteen_part_two_distance_to_letters() {
+        let input = "#############
 #g#f.D#..h#l#
 #F###e#E###.#
 #dCba!#@BcIJ#
@@ -283,13 +278,13 @@ mod year19day18 {
 #M###N#H###.#
 #o#m..#i#jk.#
 #############";
-            let field = string_to_field(input);
-            println!("{:?}", distance_to_letters(field));
-        }
+        let field = _string_to_field(input);
+        println!("{:?}", _distance_to_letters(field));
+    }
 
-        #[test]
-        fn day_eighteen_part_two_example() {
-            let input = "#############
+    #[test]
+    fn day_eighteen_part_two_example() {
+        let input = "#############
 #g#f.D#..h#l#
 #F###e#E###.#
 #dCba!#@BcIJ#
@@ -298,13 +293,13 @@ mod year19day18 {
 #M###N#H###.#
 #o#m..#i#jk.#
 #############";
-            minimize(input.to_owned(), 0);
-        }
+        _minimize(input.to_owned(), 0);
+    }
 
-        #[test]
-        fn day_eighteen_part_one_challenge() {
-            let input =
-                "#################################################################################
+    #[test]
+    fn day_eighteen_part_one_challenge() {
+        let input =
+            "#################################################################################
 #.........#.............#.......#.....#.#.....................#...#..c#.........#
 #.###.#####.#######.#####.###.#.#.###.#.#.#######.###########.#.#.###.#.#####.#.#
 #.#.#.#e..#...#.#...#.....#.#.#...#.....#..b#...#.#.........#...#.....#.#.T..r#.#
@@ -385,16 +380,16 @@ mod year19day18 {
 #.###.#.###.#.###.###.###.#####.#.#.###.#.#######.#########.#.###.#####.#.#####.#
 #.J...#.....#.........#...........#.....#.............H....o#...........#.......#
 #################################################################################";
-            println!(
-                "THE ANSWER TO DAY EIGHTEEN PART ONE IS {}",
-                minimize(input.to_owned(), 0)
-            );
-        }
+        println!(
+            "THE ANSWER TO DAY EIGHTEEN PART ONE IS {}",
+            _minimize(input.to_owned(), 0)
+        );
+    }
 
-        #[test]
-        fn day_eighteen_part_two_challenge() {
-            let input =
-                "#################################################################################
+    #[test]
+    fn day_eighteen_part_two_challenge() {
+        let input =
+            "#################################################################################
 #.........#.............#.......#.....#.#.....................#...#..c#.........#
 #.###.#####.#######.#####.###.#.#.###.#.#.#######.###########.#.#.###.#.#####.#.#
 #.#.#.#e..#...#.#...#.....#.#.#...#.....#..b#...#.#.........#...#.....#.#.T..r#.#
@@ -475,10 +470,9 @@ mod year19day18 {
 #.###.#.###.#.###.###.###.#####.#.#.###.#.#######.#########.#.###.#####.#.#####.#
 #.J...#.....#.........#...........#.....#.............H....o#...........#.......#
 #################################################################################";
-            println!(
-                "THE ANSWER TO DAY EIGHTEEN PART TWO IS {}",
-                minimize(input.to_owned(), 0)
-            );
-        }
+        println!(
+            "THE ANSWER TO DAY EIGHTEEN PART TWO IS {}",
+            _minimize(input.to_owned(), 0)
+        );
     }
 }

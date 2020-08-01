@@ -5,7 +5,7 @@ mod year19day13 {
     use std::cmp::Ordering;
     use std::collections::{BTreeMap, VecDeque};
     use std::fs;
-    use std::io;
+    // use std::io;
 
     #[derive(Copy, Clone, Debug)]
     enum Tile {
@@ -51,10 +51,9 @@ mod year19day13 {
     impl ScreenPrinter {
         fn update_screen(&mut self) {
             while self.output.len() > self.cursor + 2 {
-                let mut x: i64;
-                let mut y: i64;
+                let x: i64;
+                let y: i64;
                 let mut tile = Tile::Empty;
-                let mut score: i64;
                 x = self.output[self.cursor];
                 y = self.output[self.cursor + 1];
                 if x != -1 {
@@ -108,7 +107,7 @@ mod year19day13 {
     }
 
     // Commenting this test because beating the game takes a really long time.
-    // #[test]
+    #[allow(dead_code)]
     fn day_thirteen_part_two_challenge() {
         let readresult = fs::read_to_string("adventinputs/year19day13.txt");
         if let Ok(input) = readresult {
@@ -124,7 +123,6 @@ mod year19day13 {
             };
             let mut prev_ctxs: VecDeque<intcode::ProgramContext> = VecDeque::new();
             let mut prev_screen_printers: VecDeque<ScreenPrinter> = VecDeque::new();
-            let mut step = 0;
             prev_ctxs.push_back(ctx.clone());
             prev_screen_printers.push_back(screen_printer.clone());
             loop {
@@ -151,7 +149,6 @@ mod year19day13 {
                     Err(_e) => panic!("Error while reading keyboard input"),
                     _ => {}
                 }
-                step += 1;
             }
         }
     }

@@ -48,7 +48,7 @@ mod year19day12 {
         }
     }
 
-    fn reverse_physics(physics: &mut SmallVec<[Physics; 4]>) {
+    fn _reverse_physics(physics: &mut SmallVec<[Physics; 4]>) {
         // Since the physics are reversible, the first looped point should match the original state.
         // Therefore there shouldn't be any need to use this function.
         for i in 0..physics.len() {
@@ -135,7 +135,7 @@ mod year19day12 {
     }
 
     // Comment out test because it is super long
-    // #[test]
+    #[allow(dead_code)]
     fn day_twelve_part_two() {
         let original_physics: smallvec::SmallVec<[Physics; 4]> = smallvec![
             Physics {
@@ -155,46 +155,6 @@ mod year19day12 {
                 velocity: smallvec![0, 0, 0],
             },
         ];
-        // Small example
-        // let mut physics = smallvec![
-        //     Physics {
-        //         position: smallvec![-1, 0, 2],
-        //         velocity: smallvec![0, 0, 0],
-        //     },
-        //     Physics {
-        //         position: smallvec![2, -10, -7],
-        //         velocity: smallvec![0, 0, 0],
-        //     },
-        //     Physics {
-        //         position: smallvec![4, -8, 8],
-        //         velocity: smallvec![0, 0, 0],
-        //     },
-        //     Physics {
-        //         position: smallvec![3, 5, -1],
-        //         velocity: smallvec![0, 0, 0],
-        //     },
-        // ];
-        // Very long example
-        // let mut physics = smallvec![
-        //     Physics {
-        //         position: smallvec![-8, -10, 0],
-        //         velocity: smallvec![0, 0, 0],
-        //     },
-        //     Physics {
-        //         position: smallvec![5, 5, 10],
-        //         velocity: smallvec![0, 0, 0],
-        //     },
-        //     Physics {
-        //         position: smallvec![2, -7, 3],
-        //         velocity: smallvec![0, 0, 0],
-        //     },
-        //     Physics {
-        //         position: smallvec![9, -8, -3],
-        //         velocity: smallvec![0, 0, 0],
-        //     },
-        // ];
-        // 4686774924
-        // let mut key_step_physics = SmallVec::<[SmallVec<[Physics; 4]>; 4]>::new();
         let mut physics: smallvec::SmallVec<[Physics; 4]> = smallvec![
             Physics {
                 position: smallvec![206, 446, 84],
@@ -221,7 +181,7 @@ mod year19day12 {
                     .create(true)
                     .open("stepreached.txt")
                     .unwrap();
-                writeln!(
+                let _result = writeln!(
                     file,
                     "reached step index {}, physics is {:?}",
                     step, physics
@@ -234,7 +194,7 @@ mod year19day12 {
                     .create(true)
                     .open("day12part2.txt")
                     .unwrap();
-                writeln!(file, "found duplicate physics at step {}", step + 1);
+                let _result = writeln!(file, "found duplicate physics at step {}", step + 1);
                 return;
             }
             step += 1;

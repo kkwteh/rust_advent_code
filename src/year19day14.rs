@@ -1,8 +1,6 @@
 #[cfg(test)]
 mod year19day14 {
     use std::collections::{HashMap, HashSet};
-    use std::fs;
-    use std::include_str;
 
     #[derive(Debug, Clone)]
     struct Transform {
