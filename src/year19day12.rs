@@ -135,7 +135,7 @@ mod year19day12 {
     }
 
     // Comment out test because it is super long
-    #[allow(dead_code)]
+    // #[test]
     fn day_twelve_part_two() {
         let original_physics: smallvec::SmallVec<[Physics; 4]> = smallvec![
             Physics {
