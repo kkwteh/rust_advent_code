@@ -25,7 +25,7 @@ mod year19day17 {
         direction: Direction,
     }
 
-    fn _load_scaffold(mut ctx: intcode::ProgramContext) {
+    fn load_scaffold(mut ctx: intcode::ProgramContext) {
         let mut field: Vec<Vec<Tile>> = Vec::<Vec<Tile>>::new();
         let mut ship = Ship {
             x: 0,
@@ -173,7 +173,7 @@ mod year19day17 {
         if let Ok(input) = readresult {
             let program = intcode::read_tokens(&input);
             let ctx = intcode::build_program_context(program, vec![]);
-            _load_scaffold(ctx);
+            load_scaffold(ctx);
         }
     }
 
