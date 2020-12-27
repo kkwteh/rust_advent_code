@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod day07 {
+mod year19day07 {
     use crate::intcode::intcode;
     use permutohedron::heap_recursive;
     use std::fs;
@@ -87,7 +87,7 @@ mod day07 {
 
     #[test]
     fn day_seven_part_one_challenge() {
-        let readresult = fs::read_to_string("adventinputs/day07.txt");
+        let readresult = fs::read_to_string("adventinputs/year19day07.txt");
         match readresult {
             Ok(input) => {
                 let program = intcode::read_tokens(&input);
@@ -134,7 +134,7 @@ mod day07 {
 
     #[test]
     fn day_seven_part_two_challenge() {
-        let readresult = fs::read_to_string("adventinputs/day07.txt");
+        let readresult = fs::read_to_string("adventinputs/year19day07.txt");
         match readresult {
             Ok(input) => {
                 let program = intcode::read_tokens(&input);

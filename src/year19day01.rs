@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod day01 {
+mod year19day01 {
 
     use std::fs::File;
     use std::io::{BufRead, BufReader};
@@ -31,7 +31,7 @@ mod day01 {
 
     #[test]
     fn day_one_part_one_challenge() {
-        let f = File::open("adventinputs/day01.txt");
+        let f = File::open("adventinputs/year19day01.txt");
         match f {
             Ok(f) => {
                 let f = BufReader::new(f);
@@ -53,7 +53,7 @@ mod day01 {
 
     #[test]
     fn day_one_part_two_challenge() {
-        let f = File::open("adventinputs/day01.txt");
+        let f = File::open("adventinputs/year19day01.txt");
         match f {
             Ok(f) => {
                 let f = BufReader::new(f);

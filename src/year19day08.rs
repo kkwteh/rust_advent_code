@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod advent20191208 {
+mod year19day08 {
     use std::fs;
     use std::str::Chars;
     struct LayerChunker<'a> {
@@ -50,8 +50,8 @@ mod advent20191208 {
     }
 
     #[test]
-    fn advent20191208_part_one_challenge() {
-        let readresult = fs::read_to_string("adventinputs/advent20191208.txt");
+    fn day_eight_part_one_challenge() {
+        let readresult = fs::read_to_string("adventinputs/year19day08.txt");
         if let Ok(input) = readresult {
             let mut min = i64::max_value();
             let mut argmax: Option<Layer> = None;
@@ -86,8 +86,8 @@ mod advent20191208 {
     }
 
     #[test]
-    fn advent20191208_part_two_challenge() {
-        let readresult = fs::read_to_string("adventinputs/advent20191208.txt");
+    fn day_eight_part_two_challenge() {
+        let readresult = fs::read_to_string("adventinputs/year19day08.txt");
         if let Ok(input) = readresult {
             let layer_size = 25 * 6;
             let lc = LayerChunker {

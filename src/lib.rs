@@ -1,14 +1,14 @@
 #![allow(dead_code)]
-mod advent20191208;
-mod advent20191209;
-mod day01;
-mod day02;
-mod day03;
-mod day04;
-mod day05;
-mod day06;
-mod day07;
 mod intcode;
+mod year19day01;
+mod year19day02;
+mod year19day03;
+mod year19day04;
+mod year19day05;
+mod year19day06;
+mod year19day07;
+mod year19day08;
+mod year19day09;
 mod year19day10;
 mod year19day11;
 mod year19day12;

@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod day02 {
+mod year19day02 {
     use std::collections::HashSet;
     use std::fs;
     const ADD_OP_CODE: i64 = 1;
@@ -83,7 +83,7 @@ mod day02 {
 
     #[test]
     fn day_two_part_one_challenge() {
-        let readresult = fs::read_to_string("adventinputs/day02.txt");
+        let readresult = fs::read_to_string("adventinputs/year19day02.txt");
         match readresult {
             Ok(input) => {
                 let mut opcodes = read_opcodes(&input);
@@ -110,7 +110,7 @@ mod day02 {
 
     #[test]
     fn day_two_part_two_challenge() {
-        let readresult = fs::read_to_string("adventinputs/day02.txt");
+        let readresult = fs::read_to_string("adventinputs/year19day02.txt");
         match readresult {
             Ok(input) => {
                 let init_opcodes = read_opcodes(&input);

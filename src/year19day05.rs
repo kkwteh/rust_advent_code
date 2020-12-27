@@ -1,11 +1,11 @@
 #[cfg(test)]
-mod day05 {
+mod year19day05 {
     use crate::intcode::intcode;
     use std::fs;
 
     #[test]
     fn day_five_part_one_challenge() {
-        let readresult = fs::read_to_string("adventinputs/day05.txt");
+        let readresult = fs::read_to_string("adventinputs/year19day05.txt");
         match readresult {
             Ok(input) => {
                 let program = intcode::read_tokens(&input);
@@ -118,7 +118,7 @@ mod day05 {
 
     #[test]
     fn day_five_part_two_challenge() {
-        let readresult = fs::read_to_string("adventinputs/day05.txt");
+        let readresult = fs::read_to_string("adventinputs/year19day05.txt");
         match readresult {
             Ok(input) => {
                 let program = intcode::read_tokens(&input);

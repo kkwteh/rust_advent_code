@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod day03 {
+mod year19day03 {
     use std::collections::HashMap;
     #[cfg(test)]
     use std::fs;
@@ -176,7 +176,7 @@ mod day03 {
 
         #[test]
         fn day_three_part_one_challenge() {
-            let readresult = fs::read_to_string("adventinputs/day03.txt");
+            let readresult = fs::read_to_string("adventinputs/year19day03.txt");
             match readresult {
                 Ok(input) => {
                     let paths: Vec<&str> = (*input).split("\n").collect();
@@ -208,7 +208,7 @@ mod day03 {
 
         #[test]
         fn day_three_part_two_challenge() {
-            let readresult = fs::read_to_string("adventinputs/day03.txt");
+            let readresult = fs::read_to_string("adventinputs/year19day03.txt");
             match readresult {
                 Ok(input) => {
                     let paths: Vec<&str> = (*input).split("\n").collect();

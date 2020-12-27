@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod day06 {
+mod year19day06 {
     use std::collections::hash_map::Entry;
     use std::collections::{HashMap, VecDeque};
     use std::fs;
@@ -85,7 +85,7 @@ mod day06 {
 
     #[test]
     fn day_six_part_one_challenge() {
-        let readresult = fs::read_to_string("adventinputs/day06.txt");
+        let readresult = fs::read_to_string("adventinputs/year19day06.txt");
         match readresult {
             Ok(input) => {
                 let orbit_data = load_orbits(input);
@@ -101,7 +101,7 @@ mod day06 {
 
     #[test]
     fn day_six_part_two_challenge() {
-        let readresult = fs::read_to_string("adventinputs/day06.txt");
+        let readresult = fs::read_to_string("adventinputs/year19day06.txt");
         match readresult {
             Ok(input) => {
                 let orbit_data = load_orbits(input);

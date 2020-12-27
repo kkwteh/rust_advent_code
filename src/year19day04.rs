@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod day04 {
+mod year19day04 {
     fn has_two_adjacent_digits_same(num: u32) -> bool {
         let mut prev_char: char = 'x';
         for c in num.to_string().chars() {
