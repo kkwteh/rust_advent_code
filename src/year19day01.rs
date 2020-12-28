@@ -6,6 +6,7 @@ mod year19day01 {
     #[derive(Debug, Eq, PartialEq)]
     enum Continuation {
         FuelNeeded(i64, i64),
+        Done(i64),
     }
     fn naive_fuel_needed(k: Continuation) -> Continuation {
         match k {
@@ -14,9 +15,10 @@ mod year19day01 {
                 if inc_amount > 0 {
                     return Continuation::FuelNeeded(inc_amount, amount + inc_amount);
                 } else {
-                    return Continuation::FuelNeeded(0, amount);
+                    return Continuation::Done(amount);
                 }
             }
+            Continuation::Done(_) => panic!("Was passed a done continuation"),
         }
     }
 
@@ -24,12 +26,9 @@ mod year19day01 {
         let mut k = Continuation::FuelNeeded(mass, 0);
         loop {
             match k {
-                Continuation::FuelNeeded(unaccounted, amount) => {
-                    if unaccounted > 0 {
-                        k = naive_fuel_needed(k)
-                    } else {
-                        return amount;
-                    }
+                Continuation::FuelNeeded(_, _) => k = naive_fuel_needed(k),
+                Continuation::Done(amount) => {
+                    return amount;
                 }
             }
         }
@@ -58,7 +57,10 @@ mod year19day01 {
                     let inputval = line.unwrap().parse::<i64>().unwrap();
                     let k = naive_fuel_needed(Continuation::FuelNeeded(inputval, 0));
                     match k {
-                        Continuation::FuelNeeded(unaccounted, amount) => {
+                        Continuation::FuelNeeded(_, amount) => {
+                            res += amount;
+                        }
+                        Continuation::Done(amount) => {
                             res += amount;
                         }
                     }
