@@ -1,32 +1,50 @@
 #[cfg(test)]
 mod year19day01 {
-
     use std::fs::File;
     use std::io::{BufRead, BufReader};
-    fn naive_fuel_needed(mass: i64) -> i64 {
-        (mass / 3) - 2
+
+    #[derive(Debug, Eq, PartialEq)]
+    enum Continuation {
+        FuelNeeded(i64, i64),
+    }
+    fn naive_fuel_needed(k: Continuation) -> Continuation {
+        match k {
+            Continuation::FuelNeeded(unaccounted, amount) => {
+                let inc_amount = (unaccounted / 3) - 2;
+                if inc_amount > 0 {
+                    return Continuation::FuelNeeded(inc_amount, amount + inc_amount);
+                } else {
+                    return Continuation::FuelNeeded(0, amount);
+                }
+            }
+        }
     }
 
     fn fuel_needed(mass: i64) -> i64 {
-        let mut res = 0;
-        let mut done = false; // mut done: bool
-        let mut mass_in_question = mass;
-        while !done {
-            let direct_fuel = naive_fuel_needed(mass_in_question);
-            if direct_fuel > 0 {
-                res += direct_fuel;
-                mass_in_question = direct_fuel;
-            } else {
-                done = true;
+        let mut k = Continuation::FuelNeeded(mass, 0);
+        loop {
+            match k {
+                Continuation::FuelNeeded(unaccounted, amount) => {
+                    if unaccounted > 0 {
+                        k = naive_fuel_needed(k)
+                    } else {
+                        return amount;
+                    }
+                }
             }
         }
-        res
     }
 
     #[test]
     fn day_one_part_one_examples() {
-        assert_eq!(naive_fuel_needed(12), 2);
-        assert_eq!(naive_fuel_needed(100756), 33583);
+        assert_eq!(
+            naive_fuel_needed(Continuation::FuelNeeded(12, 0)),
+            Continuation::FuelNeeded(2, 2)
+        );
+        assert_eq!(
+            naive_fuel_needed(Continuation::FuelNeeded(100756, 0)),
+            Continuation::FuelNeeded(33583, 33583)
+        );
     }
 
     #[test]
@@ -38,7 +56,12 @@ mod year19day01 {
                 let mut res = 0;
                 for line in f.lines() {
                     let inputval = line.unwrap().parse::<i64>().unwrap();
-                    res += naive_fuel_needed(inputval);
+                    let k = naive_fuel_needed(Continuation::FuelNeeded(inputval, 0));
+                    match k {
+                        Continuation::FuelNeeded(unaccounted, amount) => {
+                            res += amount;
+                        }
+                    }
                 }
                 println!("ANSWER TO ADVENT DAY 1 PART 1 IS {}", res);
             }
