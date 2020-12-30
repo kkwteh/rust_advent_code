@@ -40,10 +40,7 @@ mod y20d02 {
         if min_match && max_match {
             return false;
         }
-        if min_match || max_match {
-            return true;
-        }
-        return false;
+        return min_match || max_match;
     }
 
     fn count_valid_index(k: Continuation) -> Continuation {
