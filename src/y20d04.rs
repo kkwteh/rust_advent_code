@@ -74,7 +74,7 @@ mod y20d04 {
                         return Err(ValidationError::new("birth year out of range"));
                     }
                 }
-                Err(error) => {
+                Err(_error) => {
                     return Err(ValidationError::new("birth year unparseable"));
                 }
             }

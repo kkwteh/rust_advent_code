@@ -4,6 +4,7 @@ mod y20d01;
 mod y20d02;
 mod y20d03;
 mod y20d04;
+mod y20d05;
 mod year19day01;
 mod year19day02;
 mod year19day03;
